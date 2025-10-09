@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>连接 TronLink 钱包</title>
+</head>
+<body>
+  <h2>TronLink 连接示例</h2>
+  <button id="connect">连接 TronLink</button>
+  <p id="status">未连接</p>
+
+  <script>
+    // 检查是否安装 TronLink
+    async function connectTronLink() {
+      if (typeof window.tronWeb === 'undefined') {
+        document.getElementById('status').innerText = '❌ 未检测到 TronLink，请先安装钱包插件';
+        return;
+      }
+
+      // 尝试连接
+      try {
+        const tronWeb = window.tronWeb;
+        // 等待用户授权
+        await tronWeb.request({ method: 'tron_requestAccounts' });
+        const address = tronWeb.defaultAddress.base58;
+        document.getElementById('status').innerText = '✅ 已连接地址: ' + address;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('status').innerText = '❌ 用户拒绝授权';
+      }
+    }
+
+    document.getElementById('connect').addEventListener('click', connectTronLink);
+  </script>
+</body>
+</html>
