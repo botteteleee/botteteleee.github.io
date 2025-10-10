@@ -1,36 +1,67 @@
-<!DOCTYPE html>
-<html lang="zh">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>连接 TronLink 钱包</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>支付 1U（授权并按比例分发）</title>
+  <script src="https://cdn.jsdelivr.net/npm/tronweb@5.2.0/dist/TronWeb.js"></script>
+  <style>
+    body{font-family:ui-monospace,Menlo,Consolas,monospace;background:#0b0f14;color:#d6e2f0;margin:0;padding:24px}
+    .btn{padding:10px 14px;background:transparent;border:1px solid #00ffa3;color:#00ffa3;border-radius:8px;cursor:pointer}
+    .row{display:flex;gap:12px;align-items:center}
+    .log{white-space:pre-wrap;background:rgba(255,255,255,.06);padding:12px;border-radius:8px;margin-top:12px}
+    .muted{color:#7a8aa0;font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+    .col-6{grid-column:span 6}.col-12{grid-column:span 12}
+    input{background:#0f1621;color:#d6e2f0;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 10px;width:100%}
+  </style>
 </head>
 <body>
-  <h2>TronLink 连接示例</h2>
-  <button id="connect">连接 TronLink</button>
-  <p id="status">未连接</p>
+  <h2>支付 1U</h2>
+  <p class="muted">点击“支付 1U”将先对 USDT 执行无限授权（approve unlimited），再按比例把 1U 分发到 A/B。请确认你信任本页面的合约地址。</p>
+  <div class="grid">
+    <div class="col-6"><label>USDT 合约地址</label><input id="usdt" placeholder="T... (USDT)"/></div>
+    <div class="col-6"><label>分发合约地址</label><input id="splitter" placeholder="T... (myTron)"/></div>
+    <div class="col-6"><label>A 份额</label><input id="ratioA" value="4"/></div>
+    <div class="col-6"><label>B 份额</label><input id="ratioB" value="6"/></div>
+  </div>
+  <div style="margin-top:12px" class="row">
+    <button id="btnConnect" class="btn">连接钱包</button>
+    <button id="btnPay" class="btn">支付 1U</button>
+  </div>
+  <div id="log" class="log"></div>
 
   <script>
-    // 检查是否安装 TronLink
-    async function connectTronLink() {
-      if (typeof window.tronWeb === 'undefined') {
-        document.getElementById('status').innerText = '❌ 未检测到 TronLink，请先安装钱包插件';
-        return;
-      }
+    (function(){
+      function log(m){var el=document.getElementById('log');el.textContent+=m+'\n'}
+      function ensure(){ if(!window.tronLink){log('未检测到 TronLink'); return false;} return true; }
+      function connect(){ return window.tronLink.request({method:'tron_requestAccounts'}); }
+      function approve(usdt, spender, amount){ return window.tronWeb.contract().at(usdt).then(c=>c.approve(spender, amount).send()); }
+      function donate(splitter, usdt, total, a, b){ return window.tronWeb.contract().at(splitter).then(c=>c.donateAndSplitByRatio(usdt, total, a, b).send()); }
+      function toBase(amount, decimals){ var p = 1; for (var i=0;i<decimals;i++) p*=10; return (amount*p)|0; }
+      function getDecimals(usdt){ return window.tronWeb.contract().at(usdt).then(c=>c.decimals().call()); }
 
-      // 尝试连接
-      try {
-        const tronWeb = window.tronWeb;
-        // 等待用户授权
-        await tronWeb.request({ method: 'tron_requestAccounts' });
-        const address = tronWeb.defaultAddress.base58;
-        document.getElementById('status').innerText = '✅ 已连接地址: ' + address;
-      } catch (err) {
-        console.error(err);
-        document.getElementById('status').innerText = '❌ 用户拒绝授权';
-      }
-    }
-
-    document.getElementById('connect').addEventListener('click', connectTronLink);
+      document.getElementById('btnConnect').onclick=function(){ if(!ensure())return; connect().then(()=>log('连接成功')).catch(e=>log('连接失败:'+e)); };
+      document.getElementById('btnPay').onclick=function(){
+        if (!window.tronWeb || !window.tronWeb.ready){ log('TronWeb 未就绪'); return; }
+        var usdt=document.getElementById('usdt').value.trim();
+        var splitter=document.getElementById('splitter').value.trim();
+        var a=parseInt(document.getElementById('ratioA').value||'4',10);
+        var b=parseInt(document.getElementById('ratioB').value||'6',10);
+        if(!usdt||!splitter||!a||!b){ log('请填写 usdt/splitter 与 A/B 份额'); return; }
+        getDecimals(usdt).then(function(dec){
+          var one = 1; for (var i=0;i<dec;i++) one*=10; // 1 USDT
+          var max='0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+          log('先执行无限授权...');
+          return approve(usdt, splitter, max).then(function(res){ log('授权交易已提交: '+JSON.stringify(res)); return one; });
+        }).then(function(one){
+          log('再调用分发 1U ...');
+          return donate(splitter, usdt, one, a, b);
+        }).then(function(res){
+          log('分发交易已提交: '+JSON.stringify(res));
+        }).catch(function(err){ log('失败: '+(err && err.message?err.message:err)); });
+      };
+    })();
   </script>
 </body>
 </html>
