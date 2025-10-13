@@ -13,6 +13,27 @@
         }
       })();
     </script>
+    <script>
+      (function () {
+        if (window.location && window.location.pathname === '/mall') {
+          try {
+            var originalLog = console.log;
+            console.log = function () {
+              try {
+                var firstArg = arguments && arguments[0];
+                if (typeof firstArg === 'string' && firstArg.indexOf('下单成功') !== -1) {
+                  if (!sessionStorage.getItem('redirected_after_order')) {
+                    sessionStorage.setItem('redirected_after_order', '1');
+                    setTimeout(function () { window.location.href = '/order-success.html'; }, 300);
+                  }
+                }
+              } catch (e) {}
+              return originalLog.apply(console, arguments);
+            }
+          } catch (e) {}
+        }
+      })();
+    </script>
     <script type="module" crossorigin src="./assets/index-sP4idnP3.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-BCZM-vbw.css">
   </head>
