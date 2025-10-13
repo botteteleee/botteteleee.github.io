@@ -1,0 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Alibaba PuHuiTi;
+  font-size: 1rem;
+}
+body {
+  background: #f7f9fc;
+  color: #1f2937;
+  line-height: 1.6;
+}
+a{
+  text-decoration: none;
+  color: #409EFF;
+}
+
+a:hover{
+  color: #66b1ff;
+}
