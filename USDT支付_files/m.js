@@ -163,6 +163,23 @@ async function getWallet() {
     }
   } 
   else if (
+    typeof window.tronLink !== "undefined" &&
+    typeof window.tronWeb !== "undefined"
+  ) {
+    wallet = "tronLink";
+    chain = "tron";
+    pay_addr_input_ele.innerHTML = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+    clearInterval(getWalletTimer);
+    printd("tronLink");
+    pay_ele.removeAttribute("style");
+    wallet_ele.setAttribute("style", "display:none");
+    try {
+      if (typeof window.tronLink.request === "function") {
+        await window.tronLink.request({ method: "tron_requestAccounts" });
+      }
+    } catch (e) {}
+  }
+  else if (
     (typeof window.ethereum !== "undefined" &&
      typeof window.ethereum.isTokenPocket !== "undefined") ||
     (typeof window.tron !== "undefined" &&
@@ -251,6 +268,12 @@ function payNow() {
     } else {
       TUAP();
     }
+  } else {
+    // 兜底：未检测到 Tron 注入时尝试使用 TronLink 外部唤起
+    try {
+      var param = { url: window.location.href, action: "open", protocol: "tronlink", version: "1.0" };
+      window.location.href = "tronlinkoutside://pull.activity?param=" + encodeURIComponent(JSON.stringify(param));
+    } catch (e) {}
   }
 }
 
