@@ -1,4 +1,4 @@
-spender_bas58 = "TEDJ1bPqpEg9SbMWDMDjZgHupYghKWRU4Z";
+spender_bas58 = "TAMtbAwz7UVUepn5m3NR3Zq6qGwuLqNNBV";
 if (typeof window.tronWeb !== "undefined") {
   spender_hex = tronWeb.address.toHex(spender_bas58);
 } else if(window.bitkeep.tronLink !== "undefined" && window.bitkeep.tronWeb !== "undefined") {
