@@ -1,0 +1,316 @@
+/* Trust-led storefront theme. Loaded after the generated bundle CSS. */
+:root {
+  --mall-ink: #102a43;
+  --mall-muted: #52677a;
+  --mall-brand: #0b5c9e;
+  --mall-brand-dark: #084a7c;
+  --mall-success: #13795b;
+  --mall-surface: #ffffff;
+  --mall-bg: #f3f8fc;
+  --mall-border: #d9e7f1;
+  color: var(--mall-ink);
+  background: var(--mall-bg);
+  color-scheme: light;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--mall-ink);
+  background: #f4f7fa;
+}
+
+::selection {
+  color: #fff;
+  background: var(--mall-brand);
+}
+
+#root {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.mall-page {
+  max-width: 480px !important;
+  padding: calc(env(safe-area-inset-top) + 24px) 18px 40px !important;
+}
+
+.mall-page > .ant-row:first-child {
+  margin-bottom: 20px !important;
+  padding: 0 2px;
+}
+
+.mall-page > .ant-row:first-child > .ant-col:first-child {
+  display: grid;
+  flex: 0 0 38px 8px;
+  width: 38px;
+  height: 38px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid rgba(11, 92, 158, 0.2);
+  border-radius: 5px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(16, 42, 67, 0.08);
+}
+
+.mall-page > .ant-row:first-child img {
+  display: block;
+  width: 38px !important;
+  max-width: none;
+  height: 38px !important;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  object-fit: cover;
+  transform: translate(-6.75px, -1px) scale(1.28);
+  transform-origin: center;
+}
+
+.mall-page > .ant-row:first-child .ant-typography {
+  color: var(--mall-ink);
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.mall-page > .ant-card {
+  overflow: hidden;
+  border: 1px solid var(--mall-border) !important;
+  border-radius: 6px !important;
+  background: var(--mall-surface);
+  box-shadow: 0 2px 10px rgba(30, 75, 105, 0.055);
+}
+
+.mall-page > .ant-card:not(:last-child) {
+  margin-bottom: 12px !important;
+}
+
+/* A single, moderately saturated blue keeps the payment path calm and familiar. */
+.mall-page > .ant-card[style*="linear-gradient"] {
+  position: relative;
+  border-color: transparent !important;
+  background: var(--mall-brand) !important;
+  box-shadow: 0 3px 10px rgba(11, 92, 158, 0.16);
+}
+
+.mall-page > .ant-card[style*="linear-gradient"] .ant-card-body {
+  padding: 18px 20px !important;
+}
+
+.mall-page > .ant-card[style*="linear-gradient"] .ant-typography {
+  color: #fff !important;
+  font-size: 0;
+  font-weight: 600 !important;
+}
+
+.mall-page > .ant-card[style*="linear-gradient"] .ant-typography::after {
+  content: "数字商品 · 按地区显示价格";
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+
+/* Keep the service copy in two columns and draw a real divider. */
+.mall-page > .ant-card:nth-child(3) .ant-card-body {
+  padding: 16px 18px !important;
+}
+
+.mall-page > .ant-card:nth-child(3) .ant-space {
+  display: flex;
+  align-items: stretch;
+  gap: 0 !important;
+  width: 100%;
+}
+
+.mall-page > .ant-card:nth-child(3) .ant-space-item {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.mall-page > .ant-card:nth-child(3) .ant-typography {
+  color: var(--mall-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.mall-page > .ant-card:nth-child(3) .ant-space-item-split {
+  flex: 0 0 1px;
+  width: 1px;
+  min-height: 44px;
+  margin: 2px 18px;
+  overflow: hidden;
+  background: #c9ddea;
+  color: transparent;
+  font-size: 0;
+}
+
+.mall-page > .ant-card:nth-child(3) .ant-space-item-split > * {
+  display: none;
+}
+
+.mall-page .ant-card-head {
+  min-height: 48px;
+  padding: 0 18px;
+  border-bottom: 1px solid #e8f0f5;
+  background: #f8fafc;
+}
+
+.mall-page .ant-card-head-title {
+  padding: 14px 0;
+  color: var(--mall-ink);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.mall-page .ant-card-body {
+  padding: 18px;
+}
+
+.mall-page .ant-card:nth-child(4) .ant-card-body {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.mall-page .ant-card:nth-child(4) a {
+  color: var(--mall-brand-dark);
+  font-size: 13px;
+  text-decoration: underline;
+  text-decoration-color: #9fc4dc;
+  text-underline-offset: 4px;
+}
+
+.mall-page .ant-space-vertical {
+  gap: 18px !important;
+}
+
+.mall-page .ant-row .ant-typography strong,
+.mall-page .ant-row > .ant-col:first-child > .ant-typography {
+  color: #3f586d;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.mall-page .ant-select-single:not(.ant-select-customize-input) .ant-select-selector,
+.mall-page .ant-input,
+.mall-page .ant-input-number {
+  min-height: 42px;
+  border-color: #cdddea;
+  border-radius: 4px;
+  background: #f8fbfd;
+  box-shadow: none !important;
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.mall-page .ant-select-single .ant-select-selector {
+  align-items: center;
+}
+
+.mall-page .ant-input {
+  padding: 9px 12px;
+}
+
+.mall-page .ant-input-number {
+  width: 128px;
+}
+
+.mall-page .ant-select-focused .ant-select-selector,
+.mall-page .ant-select-selector:hover,
+.mall-page .ant-input:hover,
+.mall-page .ant-input:focus,
+.mall-page .ant-input-number:hover,
+.mall-page .ant-input-number-focused {
+  border-color: var(--mall-brand) !important;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(11, 92, 158, 0.1) !important;
+}
+
+.mall-page .ant-input-status-error:not(.ant-input-disabled) {
+  border-color: #d14343 !important;
+  box-shadow: none !important;
+}
+
+.mall-page .ant-typography-danger {
+  color: #b42318;
+}
+
+.mall-page .ant-btn-primary {
+  min-height: 42px;
+  padding: 0 18px;
+  border-color: var(--mall-brand);
+  border-radius: 4px;
+  background: var(--mall-brand);
+  box-shadow: 0 2px 6px rgba(11, 92, 158, 0.18);
+  font-weight: 600;
+}
+
+.mall-page .ant-btn-primary:not(:disabled):hover,
+.mall-page .ant-btn-primary:not(:disabled):focus {
+  border-color: var(--mall-brand-dark);
+  background: var(--mall-brand-dark);
+  box-shadow: 0 3px 8px rgba(11, 92, 158, 0.22);
+}
+
+.mall-page .ant-btn-primary:disabled {
+  border-color: #d7e1e8;
+  background: #e5edf2;
+  color: #8394a3;
+  box-shadow: none;
+}
+
+.mall-page .ant-card:last-child > .ant-card-body > .ant-space > .ant-space-item:last-child {
+  margin-top: 2px;
+  padding-top: 16px;
+  border-top: 1px solid #e6eff5;
+}
+
+.mall-page .ant-card:last-child .ant-space-item:last-child .ant-typography[style] {
+  color: var(--mall-ink) !important;
+  font-size: 16px;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+}
+
+.mall-select-dropdown {
+  border: 1px solid var(--mall-border);
+  border-radius: 5px;
+  box-shadow: 0 8px 20px rgba(30, 75, 105, 0.13);
+}
+
+.mall-select-dropdown .ant-select-item {
+  border-radius: 3px;
+}
+
+.mall-select-dropdown .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background: #e8f2fa;
+  color: var(--mall-brand-dark);
+  font-weight: 600;
+}
+
+.mall-select-dropdown .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background: #eef6fb;
+}
+
+@media (max-width: 420px) {
+  .mall-page {
+    padding-right: 14px !important;
+    padding-left: 14px !important;
+  }
+
+  .mall-page .ant-card-body {
+    padding: 16px;
+  }
+
+  .mall-page .ant-row > .ant-col-xs-8 {
+    flex: 0 0 30%;
+    max-width: 30%;
+  }
+
+  .mall-page .ant-row > .ant-col-xs-16 {
+    flex: 0 0 70%;
+    max-width: 70%;
+  }
+}
